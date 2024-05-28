@@ -31,7 +31,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip setuptools wheel
+        python -m pip install --requirement book/requirements.txt
 
     # Build the book
     - name: Build the book
@@ -42,7 +43,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
       with:
-        path: "_build/html"
+        path: "book/_build/html"
 
     # Deploy the book's HTML to GitHub Pages
     - name: Deploy to GitHub Pages
