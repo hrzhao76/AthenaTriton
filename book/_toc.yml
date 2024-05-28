@@ -1,0 +1,17 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+parts:
+- caption: Get started
+  chapters:
+  - file: triton-tutorial
+- caption: Examples
+  chapters:
+  - file: example-ExaTrkX
+  - file: example-GNN4ITk
+- caption: Development
+  chapters:
+  - file: custom-backend
+  - file: triton-client
