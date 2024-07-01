@@ -65,6 +65,10 @@ make -j20
 source x86_64-el9-gcc13-opt/setup.sh
 ```
 
+```{note}
+The server URL is hard-coded in the configuration [`InDetGNNTrackingConfig.py`](https://gitlab.cern.ch/xju/athena/-/blob/triton_client/InnerDetector/InDetGNNTracking/python/InDetGNNTrackingConfig.py#L66-77). Please change the URL to the server you are using!
+```
+
 4. Run the example in the `run_athena/run` directory. `mkdir ../run && cd ../run`.
 You may have to use rucio to download the RDO file.
 ```bash
