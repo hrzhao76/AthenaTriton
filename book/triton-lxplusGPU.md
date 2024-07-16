@@ -1,12 +1,20 @@
-Quick an short tutorial to setup example backend on lxplus
 
-This is based on the Nivida example tutorial for Pytorch backend develment
+## Simple Example to run on LXPLUS-GPU
+
+Quick and short tutorial to setup example backend on lxplus-GPU to understand the basics of the Tirton backend and client
+
+This is based on the Nivida example tutorial for [Pytorch backend](https://github.com/triton-inference-server/tutorials/tree/main/Quick_Deploy/PyTorch) and adopted to get it to work on LXPLUS-GPU node 
 
 
+More information for LXPLUS-GPU can be found [here](https://clouddocs.web.cern.ch/gpu/index.html)
 
-### Get the Pytorch model
+
+### Get the Pytorch resnet50 model
 
 ```bash
+# Connect to lxplus GPU mode
+ssh {user_name}@lxplus.gpu.cern.ch
+#Create work directory 
 cd ~
 mkdir TritonDemo
 #  Clone the Official tutorial 
@@ -27,6 +35,10 @@ python export.py
 
 
 ### Prepare the model configs and structure 
+
+The model repository needs to fulfill certain structures and names. As shown in the following. More detail information for other backend can be found in the [official documentiton](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/model_repository.md). 
+
+
 ```
 model_repository
 |
@@ -49,18 +61,15 @@ tritonserver --model-repository=/models
 
 ```
 
-
 ### Setup Client 
 
-Open another terminal to run the
+Open another terminal to run the client script and send the inference request. 
 
-Using the LXPLUS-GPU, we need to make sure using the same machine as the one with Server to avoid the need to deal with authentication.  
-
+Using the LXPLUS-GPU, we need to make sure to use the same machine as the one with the Server to avoid the need to deal with authentication. 
 ```bash 
 # Longin to same LXPLUS-GPU
-
-ssh 
-
+# You need to replace the XXX with the same node number as the server above.
+ssh {user_name}@lxplusXXX.cern.ch
 
 export IMAGE_FOLDER="/eos/user/{initial}/{whoami}/TritonDemo/"
 
@@ -82,8 +91,8 @@ You should see the following message if the connect and ther server is in good s
 
 ```
 
+Now, we are ready to run the client script!
 
-Now are are ready to run the client script!
 
 ```bash
 cd {TritonDemo}/tutorials/Quick_Deploy/PyTorch/
@@ -92,13 +101,12 @@ python client.py
 
 ```
 
-It will take sometime depend on the GPU utilzation. But you shall be able to see the following printout if wverything goes well
+It will take some time, depending on the GPU utilization. But you shall be able to see the following printout if everything goes well
 
 ```bash 
 
 [b'12.474469:90' b'11.525709:92' b'9.660509:14' b'8.406358:136'
  b'8.220254:11']
-
 ```
 
 
