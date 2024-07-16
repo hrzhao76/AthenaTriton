@@ -14,17 +14,23 @@ More information for LXPLUS-GPU can be found [here](https://clouddocs.web.cern.c
 ```bash
 # Connect to lxplus GPU mode
 ssh {user_name}@lxplus.gpu.cern.ch
+
 #Create work directory 
 cd ~
 mkdir TritonDemo
+
 #  Clone the Official tutorial 
-git clone https://github.com/triton-inference-server/tutorials.git . 
+git clone https://github.com/triton-inference-server/tutorials.git .
+
 # Cache directory
 SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
+
 # image folder, beeter to store in EOS
 export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
+
 #Pull the image
 singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3
+
 # Run the image
 singularity run --nv -B /afs -B /eos -B /cvmfs pytorch_22.04-py3.sif
 
@@ -40,7 +46,7 @@ The model repository needs to fulfill certain structures and names. As shown in 
 
 
 ```
-model_repository
+models
 |
 +-- resnet50
     |
@@ -82,9 +88,11 @@ python -m pip install torchvision=0.17
 
 # Check if the connection is ok 
 curl -v localhost:8000/v2/health/ready
+```
 
 You should see the following message if the connect and ther server is in good state
 
+```
 < HTTP/1.1 200 OK
 < Content-Length: 0
 < Content-Type: text/plain
@@ -95,8 +103,10 @@ Now, we are ready to run the client script!
 
 
 ```bash
+# Move to folder storing the script
 cd {TritonDemo}/tutorials/Quick_Deploy/PyTorch/
 
+# Very simple script to send a images to server
 python client.py 
 
 ```
@@ -109,7 +119,7 @@ It will take some time, depending on the GPU utilization. But you shall be able 
  b'8.220254:11']
 ```
 
-
+You get a triton client and server talking to each other!
 
 
 
