@@ -42,7 +42,7 @@ Pull the image for client
 `singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
 
 Pull the image for server
-singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk
+`singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk`
 
 ```
 
@@ -143,10 +143,9 @@ Using the LXPLUS-GPU, we need to make sure to use the same machine as the one wi
 # You need to replace the XXX with the same node number as the server above.
 ssh {user_name}@lxplusXXX.cern.ch
 
-export IMAGE_FOLDER="/eos/user/{initial}/{whoami}/TritonDemo/"
+export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
 
-
-singularity run --nv -e  -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{initial}:/home -B /afs/cern.ch/user/{initial}/{whoami}:/srv -B /afs:/afs -B /eos:/eos tritonserver_22.04-py3-sdk.sif
+singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver_22.04-py3-sdk.sif
 # Need to get the correct version of torch and torchvision
 python -m pip install torchvision=0.17
 
@@ -160,10 +159,11 @@ curl -v localhost:8000/v2/health/ready
 You should see the following message if the connect and ther server is in good state
 
 ```
+...
 < HTTP/1.1 200 OK
 < Content-Length: 0
 < Content-Type: text/plain
-
+...
 ```
 
 Now, we are ready to run the client script!
@@ -171,11 +171,10 @@ Now, we are ready to run the client script!
 
 ```bash
 # Move to folder storing the script
-cd {TritonDemo}/tutorials/Quick_Deploy/PyTorch/
+cd TritonDemo/tutorials/Quick_Deploy/PyTorch/
 
 # Very simple script to send a images to server
 python client.py 
-
 ```
 
 It will take some time, depending on the GPU utilization. But you shall be able to see the following printout if everything goes well
@@ -189,7 +188,7 @@ It will take some time, depending on the GPU utilization. But you shall be able 
 
 The output is `<confidence_score>:<classification_index>`
 
-You get a triton client and server talking to each other!
+Now, you get a triton client and server talking to each other!
 
 
 
