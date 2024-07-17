@@ -16,10 +16,10 @@ It will take time to pull all three images. One could use the existing images fr
 
 If you want to pull the images, use the following command 
 
-# Image folder, better to store in EOS to avoid disk quota issue on AFS
-export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
+Image folder, better to store in EOS to avoid disk quota issue on AFS
+`export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"`
 
-# Pull the image
+Pull the image
 `singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
 
 ```
@@ -51,9 +51,9 @@ export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
 
 ```{note}
 Go to the folder you plan to store the pytorch model 
-cd {YOUR_MODEL_REPO}
+`cd {YOUR_MODEL_REPO}`
 
-cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .
+`cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .`
 ```
 
 ```bash
