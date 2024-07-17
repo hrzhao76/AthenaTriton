@@ -147,6 +147,7 @@ export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
 
 singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver_22.04-py3-sdk.sif
 # Need to get the correct version of torch and torchvision
+# You might need to install it in some other place to avoid disk quota issues. Add --target /path/to/custom_directory to specify the directory. 
 python -m pip install torchvision==0.17
 
 # Download the input images
