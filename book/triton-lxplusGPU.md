@@ -35,14 +35,14 @@ Image folder, better to store in EOS to avoid disk quota issue on AFS
 `export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"`
 
 Pull the image for model
-`singularity --dir $IMAGE_FOLDER  pull docker://nvcr.io/nvidia/pytorch:22.04-py3`
+`singularity pull --dir $IMAGE_FOLDER  pull docker://nvcr.io/nvidia/pytorch:22.04-py3`
 
 
 Pull the image for client
 `singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
 
 Pull the image for server
-`singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk`
+`singularity pull --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk`
 
 ```
 
@@ -147,7 +147,7 @@ export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
 
 singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver_22.04-py3-sdk.sif
 # Need to get the correct version of torch and torchvision
-python -m pip install torchvision=0.17
+python -m pip install torchvision==0.17
 
 # Download the input images
 wget  -O img1.jpg "https://www.hakaimagazine.com/wp-content/uploads/header-gulf-birds.jpg"
