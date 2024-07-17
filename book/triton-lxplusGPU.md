@@ -39,7 +39,7 @@ Pull the image for model
 
 
 Pull the image for client
-`singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
+`singularity pull --dir $IMAGE_FOLDER docker://docker.io/milescb/tritonserver-tutorial:22.04-py3`
 
 Pull the image for server
 `singularity pull --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk`
@@ -143,9 +143,9 @@ Using the LXPLUS-GPU, we need to make sure to use the same machine as the one wi
 # You need to replace the XXX with the same node number as the server above.
 ssh {user_name}@lxplusXXX.cern.ch
 
-export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
+export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo/"
 
-singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver_22.04-py3-sdk.sif
+singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver-tutorial_22.04-py3.sif
 # Need to get the correct version of torch and torchvision
 # You might need to install it in some other place to avoid disk quota issues. Add --target /path/to/custom_directory to specify the directory. 
 python -m pip install torchvision==0.17
