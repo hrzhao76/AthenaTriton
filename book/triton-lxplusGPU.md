@@ -8,6 +8,21 @@ This is based on the Nivida example tutorial for [Pytorch backend](https://githu
 
 More information for LXPLUS-GPU can be found [here](https://clouddocs.web.cern.ch/gpu/index.html)
 
+```bash 
+
+# Connect to lxplus GPU mode
+ssh {USER_NAME}@lxplus-gpu.cern.ch
+
+# Create work directory
+mkdir TritonDemo
+
+cd TritonDemo
+
+# Clone the Official tutorial 
+git clone https://github.com/triton-inference-server/tutorials.git .
+
+```
+
 
 ```{note}
 The container images for the Triton Inference Server can be found [Link](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
@@ -19,44 +34,34 @@ If you want to pull the images, use the following command
 Image folder, better to store in EOS to avoid disk quota issue on AFS
 `export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"`
 
-Pull the image
+Pull the image for model
+`singularity --dir $IMAGE_FOLDER  pull docker://nvcr.io/nvidia/pytorch:22.04-py3`
+
+
+Pull the image for client
 `singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
+
+Pull the image for server
+singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk
 
 ```
 
 ### Get the Pytorch resnet50 model
 
-This steps is trying to get the resnet50 model in pytorch `.pt` files extension. You can just download it from 
 
+<details>
+  <summary>Export model yourself</summary>
 
-
+This steps is trying to get the resnet50 model in pytorch `.pt` files extension.
 
 ```bash
-# Connect to lxplus GPU mode
-ssh {USER_NAME}@lxplus-gpu.cern.ch
-
-# Create work directory
-mkdir TritonDemo
 
 # Use the existing images from EOS, and change to another path in case you download them yourself
 export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo"
 
-# Clone the Official tutorial 
-git clone https://github.com/triton-inference-server/tutorials.git .
-
 # Cache directory
 export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
 
-```
-
-```{note}
-Go to the folder you plan to store the pytorch model 
-`cd {YOUR_MODEL_REPO}`
-
-`cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .`
-```
-
-```bash
 # Run the image
 singularity run --nv -B /afs -B /eos -B /cvmfs ${IMAGE_FOLDER}/pytorch_22.04-py3.sif
 
@@ -67,7 +72,16 @@ cd tutorials/Quick_Deploy/PyTorch
 python export.py
 
 ```
+</details>
 
+```{note}
+
+You can just copy it from `/afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt`
+ to the folder you plan to store the pytorch model.
+
+`cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .`
+
+```
 
 ### Prepare the model configs and structure 
 
@@ -90,10 +104,15 @@ models
 ### Set Up Triton Inference Server
 
 ```bash 
-#
+# Set cache directory 
 export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
+# Set model folder 
+export YOUR_MODEL_FOLDER="{YOUR_MODEL_FOLDER}"
+
+export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo"
+
 # Run the container with triton server 
-singularity run --nv -e --no-home -B {YOUR_MODEL_FOLDER}:/models tritonserver_22.04-py3.sif
+singularity run --nv -e --no-home -B ${YOUR_MODEL_FOLDER}:/models ${IMAGE_FOLDER}/tritonserver_22.04-py3.sif
 # Spin up a triton server
 tritonserver --model-repository=/models
 
@@ -125,8 +144,6 @@ Using the LXPLUS-GPU, we need to make sure to use the same machine as the one wi
 ssh {user_name}@lxplusXXX.cern.ch
 
 export IMAGE_FOLDER="/eos/user/{initial}/{whoami}/TritonDemo/"
-
-singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk
 
 
 singularity run --nv -e  -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{initial}:/home -B /afs/cern.ch/user/{initial}/{whoami}:/srv -B /afs:/afs -B /eos:/eos tritonserver_22.04-py3-sdk.sif
