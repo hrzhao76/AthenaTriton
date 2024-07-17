@@ -9,30 +9,59 @@ This is based on the Nivida example tutorial for [Pytorch backend](https://githu
 More information for LXPLUS-GPU can be found [here](https://clouddocs.web.cern.ch/gpu/index.html)
 
 
+```{note}
+The container images for the Triton Inference Server can be found [Link](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
+
+It will take time to pull all three images. One could use the existing images from `/afs/cern.ch/work/y/yuchou/public/TritonDemo`
+
+If you want to pull the images, use the following command 
+
+# Image folder, better to store in EOS to avoid disk quota issue on AFS
+export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
+
+# Pull the image
+`singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3`
+
+```
+
 ### Get the Pytorch resnet50 model
+
+This steps is trying to get the resnet50 model in pytorch `.pt` files extension. You can just download it from 
+
+
+
 
 ```bash
 # Connect to lxplus GPU mode
-ssh {user_name}@lxplus.gpu.cern.ch
+ssh {USER_NAME}@lxplus-gpu.cern.ch
 
-#Create work directory 
-cd ~
+# Create work directory
 mkdir TritonDemo
 
-#  Clone the Official tutorial 
+# Use the existing images from EOS, and change to another path in case you download them yourself
+export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo"
+
+# Clone the Official tutorial 
 git clone https://github.com/triton-inference-server/tutorials.git .
 
 # Cache directory
-SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
+export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
 
-# image folder, beeter to store in EOS
-export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"
+```
 
-#Pull the image
-singularity pull --dir $IMAGE_FOLDER docker://nvcr.io/nvidia/pytorch:22.04-py3
+```{note}
+Go to the folder you plan to store the pytorch model 
+cd {YOUR_MODEL_REPO}
 
+cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .
+```
+
+```bash
 # Run the image
-singularity run --nv -B /afs -B /eos -B /cvmfs pytorch_22.04-py3.sif
+singularity run --nv -B /afs -B /eos -B /cvmfs ${IMAGE_FOLDER}/pytorch_22.04-py3.sif
+
+# Move to Pytorch tutorials folder 
+cd tutorials/Quick_Deploy/PyTorch
 
 # Get the model.pt
 python export.py
@@ -61,11 +90,29 @@ models
 ### Set Up Triton Inference Server
 
 ```bash 
+#
+export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
+# Run the container with triton server 
 singularity run --nv -e --no-home -B {YOUR_MODEL_FOLDER}:/models tritonserver_22.04-py3.sif
-
+# Spin up a triton server
 tritonserver --model-repository=/models
 
 ```
+
+You should see the following print out on the terminal. 
+
+```bash
+...
++----------+---------+--------+
+| Model    | Version | Status |
++----------+---------+--------+
+| resnet50 | 1       | READY  |
++----------+---------+--------+
+...
+
+```
+
+
 
 ### Setup Client 
 
@@ -85,6 +132,9 @@ singularity --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-
 singularity run --nv -e  -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{initial}:/home -B /afs/cern.ch/user/{initial}/{whoami}:/srv -B /afs:/afs -B /eos:/eos tritonserver_22.04-py3-sdk.sif
 # Need to get the correct version of torch and torchvision
 python -m pip install torchvision=0.17
+
+# Download the input images
+wget  -O img1.jpg "https://www.hakaimagazine.com/wp-content/uploads/header-gulf-birds.jpg"
 
 # Check if the connection is ok 
 curl -v localhost:8000/v2/health/ready
@@ -118,6 +168,9 @@ It will take some time, depending on the GPU utilization. But you shall be able 
 [b'12.474469:90' b'11.525709:92' b'9.660509:14' b'8.406358:136'
  b'8.220254:11']
 ```
+
+
+The output is `<confidence_score>:<classification_index>`
 
 You get a triton client and server talking to each other!
 
