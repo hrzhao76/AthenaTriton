@@ -9,19 +9,19 @@ Last update: 2021-07-01.
 
 We developed a Trition tool in Athena to facilitate the use of Trition. The tool is called `TritonTool` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/Control/AthOnnx/AthTritonComps/src/TritonTool.h?ref_type=heads), which implements the inference interface, `IAthInferenceTool`. 
 
-We created an example to show how to use the `TritonTool` in Athena. The example is located in `InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h?ref_type=heads). Following are the steps to compile the code, setup the envirionemtn, and run the example at **Perlmutter**. Please adjust the steps for other platforms.
+We created an example to show how to use the `TritonTool` in Athena. The example is located in `InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h?ref_type=heads). Following are the steps to compile the code, setup the environment, and run the example at **Perlmutter**. Please adjust the steps for other platforms.
 
 Because the TritonClient is not yet installed in the Athena release ([see the MR](https://gitlab.cern.ch/atlas/atlasexternals/-/merge_requests/1105)), we created a container that contains the TritonClient: `docexoty/alma9-atlasos:with-triton-client`. For the same reason, The example is only available at the `gnn_aas` branch of my fork, [https://gitlab.cern.ch/xju/athena.git](https://gitlab.cern.ch/xju/athena.git).
 
 
 1. Clone the code and Launch the container.
-See ATLAS [gittutorial](https://atlassoftwaredocs.web.cern.ch/gittutorial/gitlab-fork/) documentation for how to use `git`. If not limited to disk space, I recomment to use full checkout.
+See the ATLAS [gittutorial](https://atlassoftwaredocs.web.cern.ch/gittutorial/gitlab-fork/) documentation on how to use `git`. If not limited to disk space, I recommend to use full checkout.
 
 ```bash
 git clone -b gnn_aas https://gitlab.cern.ch/xju/athena.git
 
 shifter --image=docexoty/alma9-atlasos:with-triton-client --module=cvmfs bash
-ATHENA_PATH="path-to-athena"
+ATHENA_PATH="path-to-Athena"
 cd $ATHENA_PATH
 source /global/cfs/cdirs/atlas/scripts/setupATLAS.sh
 setupATLAS
@@ -31,7 +31,7 @@ which athena
 ```
 The command `which athena` should output the path to the athena executable.
 
-2. Setup the Triton dependency environment (this can be skipped once the Trition Client is installed.)
+2. Set up the Triton dependency environment (this can be skipped once the Trition Client is installed.)
 
 ```bash
 LCG_VERSION=$(echo $ROOTSYS | awk -F / '{print $10}')
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/atlas/install/lib64:$grpc_Install_
 ```
 
 3. Compile the relevant packages. 
-Create a file named as `package_filters.txt` with the following content:
+Create a file named `package_filters.txt` with the following content:
 ```
 + InnerDetector/InDetGNNTracking
 + Control/AthOnnx/AthOnnxInterfaces
@@ -79,19 +79,19 @@ function gnn_tracking() {
     export ATHENA_CORE_NUMBER=1
 
     Reco_tf.py \
-        --CA 'all:True' --autoConfiguration 'everything' \
+ --CA 'all:True' --autoConfiguration 'everything' \
         --conditionsTag 'all:OFLCOND-MC15c-SDR-14-05' \
-        --geometryVersion 'all:ATLAS-P2-RUN4-03-00-00' \
+ --geometryVersion 'all:ATLAS-P2-RUN4-03-00-00' \
         --perfmon 'fullmonmt' \
-        --multithreaded 'True' \
+ --multithreaded 'True' \
         --steering 'doRAWtoALL' \
-        --digiSteeringConf 'StandardInTimeOnlyTruth' \
+ --digiSteeringConf 'StandardInTimeOnlyTruth' \
         --postInclude 'all:PyJobTransforms.UseFrontier' \
-        --preInclude 'all:Campaigns.PhaseIIPileUp200' 'InDetConfig.ConfigurationHelpers.OnlyTrackingPreInclude' 'InDetGNNTracking.InDetGNNTrackingFlags.gnnTritonValidation' \
+ --preInclude 'all:Campaigns.PhaseIIPileUp200' 'InDetConfig.ConfigurationHelpers.OnlyTrackingPreInclude' 'InDetGNNTracking.InDetGNNTrackingFlags.gnnTritonValidation' \
         --preExec 'flags.Tracking.GNN.usePixelHitsOnly = True' \
-        --inputRDOFile "${RDO_FILENAME}" \
+ --inputRDOFile "${RDO_FILENAME}" \
         --outputAODFile 'test.aod.gnnreader.debug.root'  \
-        --jobNumber '1' \
+ --jobNumber '1' \
         --maxEvents 5 2>&1 | tee log.gnnreader_debug.txt
 }
 
@@ -103,3 +103,5 @@ gnn_tracking
 runIDPVM.py --filesInput test.aod.gnnreader.debug.root --outputFile physval.root --doTightPrimary 
 ```
 The output file `physval.root` contains the performance of the GNN tracking.
+
+

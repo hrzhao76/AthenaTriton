@@ -1,7 +1,7 @@
 
 ## Simple Example to run on LXPLUS-GPU
 
-Quick and short tutorial to setup example backend on lxplus-GPU to understand the basics of the Tirton backend and client
+A quick and short tutorial to set up an example backend on lxplus-GPU to understand the basics of the Tirton backend and client
 
 This is based on the Nivida example tutorial for [Pytorch backend](https://github.com/triton-inference-server/tutorials/tree/main/Quick_Deploy/PyTorch) and adopted to get it to work on LXPLUS-GPU node 
 
@@ -13,7 +13,7 @@ More information for LXPLUS-GPU can be found [here](https://clouddocs.web.cern.c
 # Connect to lxplus GPU mode
 ssh {USER_NAME}@lxplus-gpu.cern.ch
 
-# Create work directory
+# Create a work directory
 mkdir TritonDemo
 
 cd TritonDemo
@@ -31,17 +31,17 @@ It will take time to pull all three images. One could use the existing images fr
 
 If you want to pull the images, use the following command 
 
-Image folder, better to store in EOS to avoid disk quota issue on AFS
+Image folder, better to store in EOS to avoid disk quota issues on AFS
 `export IMAGE_FOLDER="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/TritonDemo/"`
 
-Pull the image for model
+Pull the image for the model
 `singularity pull --dir $IMAGE_FOLDER  pull docker://nvcr.io/nvidia/pytorch:22.04-py3`
 
 
-Pull the image for client
+Pull the image for the client
 `singularity pull --dir $IMAGE_FOLDER docker://docker.io/milescb/tritonserver-tutorial:22.04-py3`
 
-Pull the image for server
+Pull the image for the Server
 `singularity pull --dir $IMAGE_FOLDER  pull docker:/nvcr.io/nvidia/tritonserver:22.04-py3-sdk`
 
 ```
@@ -52,11 +52,11 @@ Pull the image for server
 <details>
   <summary>Export model yourself</summary>
 
-This steps is trying to get the resnet50 model in pytorch `.pt` files extension.
+This step tries to get the resnet50 model in the pytorch `.pt` files extension.
 
 ```bash
 
-# Use the existing images from EOS, and change to another path in case you download them yourself
+# Use the existing images from EOS and change to another path in case you download them yourself
 export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo"
 
 # Cache directory
@@ -65,7 +65,7 @@ export SINGULARITY_CACHEDIR="/eos/user/{INITIAL}/{YOUR_ACCOUNT}/singularity/"
 # Run the image
 singularity run --nv -B /afs -B /eos -B /cvmfs ${IMAGE_FOLDER}/pytorch_22.04-py3.sif
 
-# Move to Pytorch tutorials folder 
+# Move to the Pytorch tutorials folder 
 cd tutorials/Quick_Deploy/PyTorch
 
 # Get the model.pt
@@ -76,8 +76,8 @@ python export.py
 
 ```{note}
 
-You can just copy it from `/afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt`
- to the folder you plan to store the pytorch model.
+You can copy it from `/afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt`
+ to the folder where you plan to store the PyTorch model.
 
 `cp /afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorials/Quick_Deploy/PyTorch/model.pt .`
 
@@ -85,18 +85,18 @@ You can just copy it from `/afs/cern.ch/work/y/yuchou/public/TritonDemo/tutorial
 
 ### Prepare the model configs and structure 
 
-The model repository needs to fulfill certain structures and names. As shown in the following. More detail information for other backend can be found in the [official documentiton](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/model_repository.md). 
+The model repository needs to fulfill certain structures and names, as shown in the following. More detailed information for other backends can be found in the [official documentation](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/model_repository.md). 
 
 
 ```
 models
 |
 +-- resnet50
-    |
-    +-- config.pbtxt
-    +-- 1
-        |
-        +-- model.pt
+ |
+ +-- config.pbtxt
+ +-- 1
+ |
+ +-- model.pt
 ```
 
 
@@ -118,14 +118,14 @@ tritonserver --model-repository=/models
 
 ```
 
-You should see the following print out on the terminal. 
+You should see the following printout on the terminal. 
 
 ```bash
 ...
 +----------+---------+--------+
-| Model    | Version | Status |
+| Model | Version | Status |
 +----------+---------+--------+
-| resnet50 | 1       | READY  |
+| resnet50 | 1 | READY |
 +----------+---------+--------+
 ...
 
@@ -137,7 +137,7 @@ You should see the following print out on the terminal.
 
 Open another terminal to run the client script and send the inference request. 
 
-Using the LXPLUS-GPU, we need to make sure to use the same machine as the one with the Server to avoid the need to deal with authentication. 
+Using the LXPLUS-GPU, we need to make sure to use the same machine as the one with the server to avoid the need to deal with authentication. 
 ```bash 
 # Longin to same LXPLUS-GPU
 # You need to replace the XXX with the same node number as the server above.
@@ -147,7 +147,7 @@ export IMAGE_FOLDER="/afs/cern.ch/work/y/yuchou/public/TritonDemo/"
 
 singularity run --nv -e -B /cvmfs:/cvmfs -B /afs/cern.ch/user/{INITIAL}:/home -B /afs/cern.ch/user/{INITIAL}/{YOUR_ACCOUNT}:/srv -B /afs:/afs -B /eos:/eos ${IMAGE_FOLDER}/tritonserver-tutorial_22.04-py3.sif
 # Need to get the correct version of torch and torchvision
-# You might need to install it in some other place to avoid disk quota issues. Add --target /path/to/custom_directory to specify the directory. 
+# You should install it elsewhere to avoid disk quota issues. Add --target /path/to/custom_directory to specify the directory. 
 # python -m pip install torchvision==0.17
 
 # Download the input images
@@ -157,7 +157,7 @@ wget  -O img1.jpg "https://www.hakaimagazine.com/wp-content/uploads/header-gulf-
 curl -v localhost:8000/v2/health/ready
 ```
 
-You should see the following message if the connect and ther server is in good state
+You should see the following message if the connection and the server are in a good state.
 
 ```
 ...
@@ -171,14 +171,14 @@ Now, we are ready to run the client script!
 
 
 ```bash
-# Move to folder storing the script
+# Move to the folder storing the script
 cd TritonDemo/tutorials/Quick_Deploy/PyTorch/
 
-# Very simple script to send a images to server
+# Straightforward script to send an image to server
 python client.py 
 ```
 
-It will take some time, depending on the GPU utilization. But you shall be able to see the following printout if everything goes well
+It will take some time, depending on the GPU utilization. But if everything goes well, you will be able to see the following printout.
 
 ```bash 
 
@@ -190,7 +190,3 @@ It will take some time, depending on the GPU utilization. But you shall be able 
 The output is `<confidence_score>:<classification_index>`
 
 Now, you get a triton client and server talking to each other!
-
-
-
-
