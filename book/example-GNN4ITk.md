@@ -1,11 +1,33 @@
 # GNN4ITk as a Service
 
 ## The server
-Reference:  [repo](https://github.com/hrzhao76/GNN4ITk-aaS)
+Last update: 2024-09-04.
+
+Reference: [repo](https://github.com/xju2/tracking-as-a-service)
+
+THe following are instructions of running a Trition server for GNN4ITk using Perlmutter at NERSC.
+
+1. Clone the tracking as a service repo and download the model.
+```bash
+git clone https://github.com/xju2/tracking-as-a-service
+cd tracking-as-a-service
+python scripts/download_model.py
+```
+
+2. Request a GPU node and write down the server ID, like `nid00888`, which will the server URL for the client.
+```bash
+srun -C "gpu&hbm80g" -q interactive -N 1 -G 1 -c 32 -t 4:00:00 -A m3443 --pty /bin/bash -l
+```
+
+3. Launch the server.
+
+```bash
+./scripts/start-tritonserver.sh
+```
 
 ## The client
 
-Last update: 2021-07-01.
+Last update: 2024-09-04.
 
 We developed a Trition tool in Athena to facilitate the use of Trition. The tool is called `TritonTool` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/Control/AthOnnx/AthTritonComps/src/TritonTool.h?ref_type=heads), which implements the inference interface, `IAthInferenceTool`. 
 
@@ -65,37 +87,42 @@ make -j20
 source x86_64-el9-gcc13-opt/setup.sh
 ```
 
-```{note}
-The server URL is hard-coded in the configuration [`InDetGNNTrackingConfig.py`](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/InnerDetector/InDetGNNTracking/python/InDetGNNTrackingConfig.py#L66-77). Please change the URL to the server you are using!
-```
-
 4. Run the example in the `run_athena/run` directory. `mkdir ../run && cd ../run`.
 You may have to use rucio to download the RDO file.
 ```bash
 RDO_FILENAME="inputData/RDO.37737772._000213.pool.root.1"
 
-function gnn_tracking() {
+function clean_up() {
     rm InDetIdDict.xml PoolFileCatalog.xml hostnamelookup.tmp eventLoopHeartBeat.txt
+}
+
+function gnn4pixel() {
+    clean_up
     export ATHENA_CORE_NUMBER=1
+    if [ -z "$1" ]; then
+        echo "Please provide the Triton server ID."
+        return
+    fi
+    TritionServer=$1
 
     Reco_tf.py \
         --CA 'all:True' --autoConfiguration 'everything' \
         --conditionsTag 'all:OFLCOND-MC15c-SDR-14-05' \
         --geometryVersion 'all:ATLAS-P2-RUN4-03-00-00' \
-        --perfmon 'fullmonmt' \
-        --multithreaded 'True' \
+        --multithreaded 'False' \
         --steering 'doRAWtoALL' \
         --digiSteeringConf 'StandardInTimeOnlyTruth' \
         --postInclude 'all:PyJobTransforms.UseFrontier' \
         --preInclude 'all:Campaigns.PhaseIIPileUp200' 'InDetConfig.ConfigurationHelpers.OnlyTrackingPreInclude' 'InDetGNNTracking.InDetGNNTrackingFlags.gnnTritonValidation' \
-        --preExec 'flags.Tracking.GNN.usePixelHitsOnly = True' \
+        --preExec 'flags.Tracking.GNN.usePixelHitsOnly = True; flags.Tracking.ITkGNNPass.doAmbiguityResolutionForGNN = False; flags.Tracking.GNN.Triton.model = "GNN4Pixel"' "flags.Tracking.GNN.Triton.url = \"${TritionServer}\"" \
         --inputRDOFile "${RDO_FILENAME}" \
-        --outputAODFile 'test.aod.gnnreader.debug.root'  \
+        --outputAODFile 'test.aod.gnnTriton.root'  \
         --jobNumber '1' \
-        --maxEvents 5 2>&1 | tee log.gnnreader_debug.txt
+		--athenaopts='--loglevel=INFO' \
+        --maxEvents -1 2>&1 | tee log.gnnTrition.txt
 }
 
-gnn_tracking
+gnn4pixel nid00888
 ```
 
 5. To evaluate the performance, we can run the `IDPVM` package [see the link for more info](https://gitlab.cern.ch/atlas/athena/-/tree/main/InnerDetector/InDetValidation/InDetPhysValMonitoring?ref_type=heads).
