@@ -4,14 +4,15 @@
 format: jb-book
 root: intro
 parts:
-- caption: Get started
-  chapters:
-  - file: triton-tutorial
-- caption: Examples
-  chapters:
-  - file: example-ExaTrkX
-  - file: example-GNN4ITk
-- caption: Development
-  chapters:
-  - file: custom-backend
-  - file: triton-client
+  - caption: Get started
+    chapters:
+      - file: triton-tutorial
+      - file: triton-lxplusGPU
+  - caption: Examples
+    chapters:
+      - file: example-ExaTrkX
+      - file: example-GNN4ITk
+  - caption: Development
+    chapters:
+      - file: custom-backend
+      - file: triton-client
