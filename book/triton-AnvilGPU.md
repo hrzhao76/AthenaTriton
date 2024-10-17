@@ -88,7 +88,7 @@ Open a new terminal tab in the notebook
 export YOUR_MODEL_FOLDER="{YOUR_MODEL_FOLDER}"
 
 # Run the container with the Triton server 
-apptainer run --nv --unsquash -B /proc:/proc -B /shared-storage:/mnt/shared-storage /images/tritonserver:24.09-py3
+apptainer run --nv --unsquash -B /proc:/proc -B /shared-storage:/shared-storage /images/tritonserver:24.09-py3
 
 # Spin up a triton server
 tritonserver --model-repository=${YOUR_MODEL_FOLDER}
@@ -110,15 +110,15 @@ You should see the following printout on the terminal.
 
 
 
-### Setup Client 
+### Setup Client
 
-Open another terminal to run the client script and send the inference request. 
+Open another terminal to run the client script and send the inference request.
 
 We are kind of cheating here, given the terminal are on the same machine. In real life scenario, you will need the IP of the server to forward the request to a remote server and deal with authentication. 
 
 ```bash 
 # Luanch the server docker images 
-apptainer run --nv --unsquash -B /proc:/proc -B /shared-storage:/mnt/shared-storage /images/tritonserver-tutorial:24.08-py3
+apptainer run --nv --unsquash -B /proc:/proc -B /shared-storage:/shared-storage /images/tritonserver-tutorial:24.08-py3
 
 # Download the input images
 wget  -O img1.jpg "https://www.hakaimagazine.com/wp-content/uploads/header-gulf-birds.jpg"
@@ -145,7 +145,7 @@ Now, we are ready to run the client script!
 
 ```bash
 # Straightforward script to send an image to server
-python client.py 
+python3 client.py 
 ```
 
 It will take some time, depending on the GPU utilization. But if everything goes well, you will be able to see the following printout.
