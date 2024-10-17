@@ -20,10 +20,10 @@ This step tries to get the resnet50 model in the pytorch `.pt` files extension.
 
 ```{note}
 
-You can copy it from `/shared-storage/PyTorch//model.pt`
+You can copy it from `/shared-storage/pytorch/model.pt`
  to the folder where you plan to store the PyTorch model.
 
-cp /shared-storage/PyTorch/model.pt .
+cp /shared-storage/pytorch/model.pt .
 
 ```
 
