@@ -114,7 +114,7 @@ You should see the following printout on the terminal.
 
 Open another terminal to run the client script and send the inference request. 
 
-We are kind of cheating here, given the ternail are on the same machine. In real life scenario, you will need the IP of the server to forward the request to a remote server and deal with authentication. 
+We are kind of cheating here, given the terminal are on the same machine. In real life scenario, you will need the IP of the server to forward the request to a remote server and deal with authentication. 
 
 ```bash 
 # Luanch the server docker images 
