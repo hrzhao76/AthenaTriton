@@ -29,20 +29,30 @@ srun -C "gpu&hbm80g" -q interactive -N 1 -G 1 -c 32 -t 4:00:00 -A m3443 --pty /b
 
 Last update: 2024-09-04.
 
-We developed a Trition tool in Athena to facilitate the use of Trition. The tool is called `TritonTool` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/Control/AthOnnx/AthTritonComps/src/TritonTool.h?ref_type=heads), which implements the inference interface, `IAthInferenceTool`. 
+We developed a Trition tool in Athena to facilitate the use of Trition. 
+The tool is called `TritonTool` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/Control/AthOnnx/AthTritonComps/src/TritonTool.h?ref_type=heads), 
+which implements the inference interface, `IAthInferenceTool`. 
 
-We created an example to show how to use the `TritonTool` in Athena. The example is located in `InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h` [link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h?ref_type=heads). Following are the steps to compile the code, setup the environment, and run the example at **Perlmutter**. Please adjust the steps for other platforms.
+We created an example to show how to use the `TritonTool` in Athena. 
+The example is located in `InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h` 
+[link to code](https://gitlab.cern.ch/xju/athena/-/blob/gnn_aas/InnerDetector/InDetGNNTracking/src/GNNTrackFinderTritonTool.h?ref_type=heads). 
+Following are the steps to compile the code, setup the environment, and run the example at **Perlmutter**. 
+Please adjust the steps for other platforms.
 
-Because the TritonClient is not yet installed in the Athena release ([see the MR](https://gitlab.cern.ch/atlas/atlasexternals/-/merge_requests/1105)), we created a container that contains the TritonClient: `docexoty/alma9-atlasos:with-triton-client`. For the same reason, The example is only available at the `gnn_aas` branch of my fork, [https://gitlab.cern.ch/xju/athena.git](https://gitlab.cern.ch/xju/athena.git).
+Because the TritonClient is not yet installed in the Athena release 
+([see the MR](https://gitlab.cern.ch/atlas/atlasexternals/-/merge_requests/1105)), 
+we created a container that contains the TritonClient: `docexoty/alma9-atlasos:triton-client-grpc1p62p3`. 
+For the same reason, The example is only available at the `gnn_aas` branch of my fork, [https://gitlab.cern.ch/xju/athena.git](https://gitlab.cern.ch/xju/athena.git).
 
 
 1. Clone the code and Launch the container.
-See the ATLAS [gittutorial](https://atlassoftwaredocs.web.cern.ch/gittutorial/gitlab-fork/) documentation on how to use `git`. If not limited to disk space, I recommend to use full checkout.
+See the ATLAS [gittutorial](https://atlassoftwaredocs.web.cern.ch/gittutorial/gitlab-fork/) 
+documentation on how to use `git`. If not limited to disk space, I recommend to use full checkout.
 
 ```bash
 git clone -b gnn_aas https://gitlab.cern.ch/xju/athena.git
 
-shifter --image=docexoty/alma9-atlasos:with-triton-client --module=cvmfs bash
+shifter --image=docexoty/alma9-atlasos:triton-client-grpc1p62p3 --module=cvmfs bash
 ATHENA_PATH="path-to-Athena"
 cd $ATHENA_PATH
 source /global/cfs/cdirs/atlas/scripts/setupATLAS.sh
@@ -65,8 +75,9 @@ grpc_Install_Dir=${LCG_PATH}/grpc/1.48.0/${LCG_PLATFORM}
 c_ares_ROOT=${LCG_PATH}/c_ares/1.17.1/${LCG_PLATFORM}
 absl_ROOT=${LCG_PATH}/absl/20230802.1/${LCG_PLATFORM}
 re2_ROOT=${LCG_PATH}/re2/2023.11.01/${LCG_PLATFORM}
+tritonclient_ROOT=/home/atlas/install/tritonclient
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/atlas/install/lib64:$grpc_Install_Dir/lib:$c_ares_ROOT/lib64:$absl_ROOT/lib64:$re2_ROOT/lib64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${tritonclient_ROOT}/lib64:$grpc_Install_Dir/lib:$c_ares_ROOT/lib64:$absl_ROOT/lib64:$re2_ROOT/lib64
 ```
 
 3. Compile the relevant packages. 
@@ -80,7 +91,8 @@ Create a file named `package_filters.txt` with the following content:
 ```
 Then compile the packages in a build directory `mkdir ../run_athena/build && cd ../run_athena/build`:
 ```bash
-cmake -DATLAS_PACKAGE_FILTER_FILE=../../athena/package_filters.txt -DCMAKE_PREFIX_PATH="/home/atlas/install/lib64/cmake;${grpc_Install_Dir}/lib/cmake;${c_ares_ROOT}/lib64/cmake;${absl_ROOT}/lib64/cmake;${re2_ROOT}/lib64/cmake" ../../athena/Projects/WorkDir
+cmake -DATLAS_PACKAGE_FILTER_FILE=../../athena/package_filters.txt \
+  -DCMAKE_PREFIX_PATH="${tritonclient_ROOT}/lib64/cmake;${grpc_Install_Dir}/lib/cmake;${c_ares_ROOT}/lib64/cmake;${absl_ROOT}/lib64/cmake;${re2_ROOT}/lib64/cmake" ../../athena/Projects/WorkDir
 
 make -j20
 
