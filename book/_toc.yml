@@ -13,6 +13,7 @@ parts:
     chapters:
       - file: example-ExaTrkX
       - file: example-GNN4ITk
+      - file: example-traccc
   - caption: Development
     chapters:
       - file: custom-backend
