@@ -14,7 +14,7 @@ A minimal description of how to build a working version is detailed below. For m
 
 Simply clone the repository with 
 
-```
+```bash
 git clone --recurse-submodules git@github.com:milescb/traccc-aaS.git
 ```
 
@@ -22,7 +22,7 @@ git clone --recurse-submodules git@github.com:milescb/traccc-aaS.git
 
 A docker built for the triton server can be found at `docker.io/milescb/triton-server:latest`. To run this do
 
-```
+```bash
 shifter --module=gpu --image=milescb/tritonserver:latest
 ```
 
@@ -40,7 +40,7 @@ To see how this was built, consult the `Dockerfile` in the [traccc-aaS repositor
 
 To run out of the box on [NERSC](https://www.nersc.gov), an installation of `traccc` and the backend can be found at `/global/cfs/projectdirs/m3443/data/traccc-aaS/software/prod/ver_09152024/install`. To set up the environment, run the docker then set the following environment variables
 
-```
+```bash
 export DATADIR=/global/cfs/projectdirs/m3443/data/traccc-aaS/data
 export INSTALLDIR=/global/cfs/projectdirs/m3443/data/traccc-aaS/software/prod/ver_09152024/install
 export PATH=$INSTALLDIR/bin:$PATH
@@ -49,7 +49,7 @@ export LD_LIBRARY_PATH=$INSTALLDIR/lib:$LD_LIBRARY_PATH
 
 Then the server can be launched with 
 
-```
+```bash
 tritonserver --model-repository=$INSTALLDIR/models
 ```
 
@@ -65,7 +65,7 @@ To avoid having to build from source, deploy the server with the docker image `d
 
 First, enter the docker and set environment variables as documented above. Then run
 
-```
+```bash
 cd backend/traccc-gpu && mkdir build install && cd build
 cmake -B . -S ../ \
     -DCMAKE_INSTALL_PREFIX=../install/
@@ -75,7 +75,7 @@ cmake --build . --target install -- -j20
 
 Then, the server can be launched as above:
 
-```
+```bash
 tritonserver --model-repository=../../models
 ```
 
@@ -83,7 +83,7 @@ tritonserver --model-repository=../../models
 
 Once the server is launched, run the model via:
 
-```
+```bash
 cd client && python TracccTritonClient.py 
 ```
 
